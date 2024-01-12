@@ -1,0 +1,21 @@
+provider "slack" {
+  token = var.slack_token
+}
+
+data "slack_user" "user_logs_to" {
+  name = "var.slack-user-logging"
+}
+
+resource "slack_usergroup" "group_0" {
+  name        = "var.group_name0"
+  description = "User group for logging from SQS"
+  users       = [data.slack_user.user_logs_to.id]
+}
+
+resource "slack_conversation" "channel-for-logs" {
+  name              = "var.channel_name"
+  topic             = "New logs live"
+  permanent_members = slack_usergroup.group_0.users
+  is_private        = true
+}
+
